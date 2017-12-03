@@ -25,8 +25,8 @@ def main():
     graph_matrix = nx.adjacency_matrix(graph)
 
     with open(OUTPUT_FILE, mode='w') as graph_file:
-        graph_file.write(str(args.vertex_count))
-        graph_file.write('\n')
+        # graph_file.write(str(args.vertex_count))
+        # graph_file.write('\n')
 
         graph_string = re.sub("\[|\]", "", str(graph_matrix.todense()))
         graph_string = re.sub("\n ", "\n", graph_string)

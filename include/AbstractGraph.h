@@ -6,17 +6,22 @@
 
 class AbstractGraph {
 
+protected:
 	unsigned** matrix;
+
+	std::string graphFilename;
+	unsigned vertexesNumber;
 
 	inline unsigned** getMatrix();
 	inline unsigned getValueFromMatrix(unsigned x, unsigned y);
 
-	public:
-		virtual ~AbstractGraph();
+public:
+	AbstractGraph(std::string graphFilename, unsigned vertexesNumber);
+	virtual ~AbstractGraph();
 
-		void loadGraphFromFile(std::string filename);
-		inline unsigned* getVertexEdges(unsigned vertexNumber);
+	void loadGraphFromFile(std::string filename);
+	inline unsigned* getVertexEdges(unsigned vertexNumber);
 
-		virtual std::vector<unsigned> getCriticalPath() = 0;
+	virtual std::vector<unsigned> getCriticalPath() = 0;
 
 };
