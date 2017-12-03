@@ -33,11 +33,18 @@ def main():
 
     graph_matrix = sparse.lil_matrix(temp_graph_matrix)
 
+    string_matrix = ""
+
+    for char in str(graph_matrix.todense()):
+        if char == '1':
+            char = str(random.randint(1, 255))
+        string_matrix += char
+
     with open(OUTPUT_FILE, mode='w') as graph_file:
         # graph_file.write(str(args.vertex_count))
         # graph_file.write('\n')
 
-        graph_string = re.sub("\[|\]", "", str(graph_matrix.todense()))
+        graph_string = re.sub("\[|\]", "", string_matrix)
         graph_string = re.sub("\n ", "\n", graph_string)
         graph_file.write(graph_string)
 
