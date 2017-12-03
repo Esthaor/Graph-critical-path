@@ -1,25 +1,25 @@
 #include<iostream>
-#include"Incremental.h"
+#include"../include/Incremental.h"
 
-std::string GRAPH_FILE = "graph.txt";
+unsigned VERTEXES = 10;
+std::string GRAPH_FILE = "gen/graph.txt";
 
-void incremental() {
-	Incremental* incremental = new Incremental();
-	incremental->loadGraphFromFile(GRAPH_FILE);
+void incremental(std::string graphFilename, unsigned vertexesNumber) {
+	Incremental* incremental = new Incremental(graphFilename, vertexesNumber);
 
-	std::vector<unsigned> criticalPath = incremental->getCriticalPath();
+	incremental->printMatrix();
 
+	// std::vector<unsigned> criticalPath = incremental->getCriticalPath();
 }
 
 
 int main(int argc, char** argv) {
 
-	if (argc == 1) {
-		incremental(); // default mode
+	if (argc > 1) {
+		incremental(GRAPH_FILE, std::stoul(argv[1])); // default mode
 	}
 	else {
-		// todo: analyze argv for mprogram mode -> paralel; cuda_parallel
+		incremental(GRAPH_FILE, VERTEXES); // test mode
 	}
-
-
+	std::cin.get();
 }

@@ -34,3 +34,7 @@
 # Visual Studio / Visual Code Config Folder
 .vs/*
 scripts/.vscode/*
+Debug/*
+x64/Debug/*
+CppProperties.json
+Graph-critical-path*

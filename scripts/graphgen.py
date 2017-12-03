@@ -34,8 +34,8 @@ def main():
     graph_matrix = sparse.lil_matrix(temp_graph_matrix)
 
     with open(OUTPUT_FILE, mode='w') as graph_file:
-        graph_file.write(str(args.vertex_count))
-        graph_file.write('\n')
+        # graph_file.write(str(args.vertex_count))
+        # graph_file.write('\n')
 
         graph_string = re.sub("\[|\]", "", str(graph_matrix.todense()))
         graph_string = re.sub("\n ", "\n", graph_string)
