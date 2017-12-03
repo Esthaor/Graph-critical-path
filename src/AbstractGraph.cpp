@@ -1,6 +1,9 @@
-#include"AbstractGraph.h"
+#include"../include/AbstractGraph.h"
 
-AbstractGraph::AbstractGraph(std::string graphFilename, unsigned vertexesNumber) {
+void AbstractGraph::init(std::string graphFilename, unsigned vertexesNumber) {
+
+	std::cout << "AbstractGraph::AbstractGraph" << std::endl;
+		
 	this->graphFilename = graphFilename;
 	this->vertexesNumber = vertexesNumber;
 
@@ -25,25 +28,22 @@ void AbstractGraph::loadGraphFromFile(std::string filename) {
 
 	std::ifstream graphFile;
 	graphFile.open(filename);
-	std::string edgeValue;
+	std::string line, edgeValue;
 	int row_idx = 0, col_idx = 0;
 
 	if (graphFile.is_open()) {
 		
-		while (std::getline(graphFile, edgeValue, ' ')) {
+		while (std::getline(graphFile, line)) {
 
-			if (edgeValue == "\n") {
-				col_idx = 0;
-				row_idx++;
-			} else {
+			std::istringstream line_stream(line);
+
+			while (std::getline(line_stream, edgeValue, ' ')) {
 				matrix[row_idx][col_idx] = std::stoul(edgeValue);
+				col_idx++;
 			}
 
-			/*
-				if (row_idx > vertexesNumber) {
-					std::cout << "wrong indexes" << std::endl;
-				}
-			*/
+			col_idx = 0;
+			row_idx++;
 
 		}
 
@@ -52,6 +52,16 @@ void AbstractGraph::loadGraphFromFile(std::string filename) {
 	}
 
 }
+
+void AbstractGraph::printMatrix() {
+	for (unsigned row = 0; row < vertexesNumber; row++) {
+		for (unsigned col = 0; col < vertexesNumber; col++) {
+			std::cout << " " << matrix[row][col];
+		}
+		std::cout << std::endl;
+	}
+}
+
 
 inline unsigned** AbstractGraph::getMatrix() {
 	return matrix;

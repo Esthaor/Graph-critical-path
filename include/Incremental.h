@@ -1,4 +1,4 @@
-#include"AbstractGraph.h"
+#include"../include/AbstractGraph.h"
 
 class Incremental : public AbstractGraph {
 

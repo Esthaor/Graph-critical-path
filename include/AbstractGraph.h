@@ -1,6 +1,7 @@
 #include<iostream>
 #include<vector>
 #include<fstream>
+#include<sstream>
 #include<string>
 #include<ctime>
 
@@ -16,11 +17,13 @@ protected:
 	inline unsigned getValueFromMatrix(unsigned x, unsigned y);
 
 public:
-	AbstractGraph(std::string graphFilename, unsigned vertexesNumber);
+	void init(std::string graphFilename, unsigned vertexesNumber);
 	virtual ~AbstractGraph();
 
 	void loadGraphFromFile(std::string filename);
 	inline unsigned* getVertexEdges(unsigned vertexNumber);
+
+	void printMatrix();
 
 	virtual std::vector<unsigned> getCriticalPath() = 0;
 
