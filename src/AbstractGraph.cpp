@@ -7,10 +7,10 @@ void AbstractGraph::init(std::string graphFilename, unsigned vertexesNumber) {
 	this->graphFilename = graphFilename;
 	this->vertexesNumber = vertexesNumber;
 
-	this->matrix = new unsigned*[vertexesNumber];
+	this->matrix = new int*[vertexesNumber];
 
 	for (int i = 0; i < vertexesNumber; i++) {
-		this->matrix[i] = new unsigned[vertexesNumber];
+		this->matrix[i] = new int[vertexesNumber];
 	}
 
 	this->loadGraphFromFile(graphFilename);
@@ -63,14 +63,14 @@ void AbstractGraph::printMatrix() {
 }
 
 
-inline unsigned** AbstractGraph::getMatrix() {
+inline int** AbstractGraph::getMatrix() {
 	return matrix;
 }
 
-inline unsigned AbstractGraph::getValueFromMatrix(unsigned x, unsigned y) {
+inline int AbstractGraph::getValueFromMatrix(unsigned x, unsigned y) {
 	return matrix[x][y];
 }
 
-inline unsigned* AbstractGraph::getVertexEdges(unsigned vertexNumber) {
+inline int* AbstractGraph::getVertexEdges(unsigned vertexNumber) {
 	return matrix[vertexNumber];
 }

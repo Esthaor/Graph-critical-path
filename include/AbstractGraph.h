@@ -8,23 +8,29 @@
 class AbstractGraph {
 
 protected:
-	unsigned** matrix;
+	int** matrix;
 
 	std::string graphFilename;
 	unsigned vertexesNumber;
 
-	inline unsigned** getMatrix();
-	inline unsigned getValueFromMatrix(unsigned x, unsigned y);
+	inline int** getMatrix();
+	inline int getValueFromMatrix(unsigned x, unsigned y);
 
 public:
+	struct path {
+		int pathLength;
+		int pathStart;
+		int pathEnd;
+	};
+
 	void init(std::string graphFilename, unsigned vertexesNumber);
 	virtual ~AbstractGraph();
 
 	void loadGraphFromFile(std::string filename);
-	inline unsigned* getVertexEdges(unsigned vertexNumber);
+	inline int* getVertexEdges(unsigned vertexNumber);
 
 	void printMatrix();
 
-	virtual std::vector<unsigned> getCriticalPath() = 0;
+	virtual AbstractGraph::path* getCriticalPath() = 0;
 
 };
