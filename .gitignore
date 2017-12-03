@@ -31,5 +31,6 @@
 *.out
 *.app
 
-# Visual Studio Config Folder
+# Visual Studio / Visual Code Config Folder
 .vs/*
+scripts/.vscode/*
