@@ -1,9 +1,11 @@
 #include<iostream>
 #include"Incremental.h"
 
+std::string GRAPH_FILE = "graph.txt";
+
 void incremental() {
 	Incremental* incremental = new Incremental();
-	incremental->loadGraphFromFile();
+	incremental->loadGraphFromFile(GRAPH_FILE);
 
 	std::vector<unsigned> criticalPath = incremental->getCriticalPath();
 
@@ -16,7 +18,7 @@ int main(int argc, char** argv) {
 		incremental(); // default mode
 	}
 	else {
-		// todo: analazy argv for mprogram mode -> paralel; cuda_parallel
+		// todo: analyze argv for mprogram mode -> paralel; cuda_parallel
 	}
 
 

@@ -1,5 +1,8 @@
 #include<iostream>
 #include<vector>
+#include<fstream>
+#include<string>
+#include<ctime>
 
 class AbstractGraph {
 
@@ -9,10 +12,9 @@ class AbstractGraph {
 	inline unsigned getValueFromMatrix(unsigned x, unsigned y);
 
 	public:
-		virtual 
 		virtual ~AbstractGraph();
 
-		void loadGraphFromFile();
+		void loadGraphFromFile(std::string filename);
 		inline unsigned* getVertexEdges(unsigned vertexNumber);
 
 		virtual std::vector<unsigned> getCriticalPath() = 0;
