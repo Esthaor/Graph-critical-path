@@ -13,7 +13,7 @@ AbstractGraph::path* C11ThreadsVersion::getCriticalPath() {
 
 	std::thread* threads = new std::thread[vertexesNumber];
 	for (int i = 0; i < vertexesNumber; i++) {
-		threads[i] = std::thread(&parallelCode, i);
+		threads[i] = std::thread(&C11ThreadsVersion::parallelCode, this, i);
 		threads[i].join();
 	}
 

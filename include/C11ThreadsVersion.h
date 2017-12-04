@@ -1,4 +1,5 @@
-#include"../include/AbstractGraph.h"
+#pragma once
+#include"AbstractGraph.h"
 #include<thread>
 #include<mutex>
 #include<algorithm>
