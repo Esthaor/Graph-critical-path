@@ -3,7 +3,7 @@
 void AbstractGraph::init(std::string graphFilename, unsigned vertexesNumber) {
 
 	std::cout << "AbstractGraph::AbstractGraph" << std::endl;
-		
+
 	this->graphFilename = graphFilename;
 	this->vertexesNumber = vertexesNumber;
 
@@ -11,9 +11,18 @@ void AbstractGraph::init(std::string graphFilename, unsigned vertexesNumber) {
 
 	for (int i = 0; i < vertexesNumber; i++) {
 		this->matrix[i] = new int[vertexesNumber];
+
+		for (int j = 0; j < vertexesNumber; j++) {
+			this->matrix[i][j] = 0;
+		}
+
 	}
 
-	this->loadGraphFromFile(graphFilename);
+	if (GENERATE_GRAPH) {
+		this->generateGraph();
+	} else {
+		this->loadGraphFromFile(graphFilename);
+	}
 }
 
 AbstractGraph::~AbstractGraph() {
@@ -32,7 +41,7 @@ void AbstractGraph::loadGraphFromFile(std::string filename) {
 	int row_idx = 0, col_idx = 0;
 
 	if (graphFile.is_open()) {
-		
+
 		while (std::getline(graphFile, line)) {
 
 			std::istringstream line_stream(line);
@@ -47,21 +56,80 @@ void AbstractGraph::loadGraphFromFile(std::string filename) {
 
 		}
 
-	} else {
+	}
+	else {
 		std::cout << "Couldn't open graph file" << std::endl;
 	}
+
+	graphFile.close();
+}
+
+void AbstractGraph::generateGraph() {
+	std::srand(time(NULL));
+
+	for (int i = 0; i < vertexesNumber; i++) {
+		for (int j = 0; j < vertexesNumber; j++) {
+			if (j > i) {
+				if ((std::rand() % 100) < 44) {
+					matrix[i][j] = (std::rand() % 511);
+				}
+				else {
+					matrix[i][j] = 0;
+				}
+			}
+		}
+	}
+}
+
+int AbstractGraph::rowCount(int y) {
+	unsigned  count = 0;
+	for (int i = 0; i < vertexesNumber; i++) {
+		if (matrix[i][y] != 0) {
+			count++;
+		}
+	}
+
+	return count;
+}
+
+int AbstractGraph::colCount(int x) {
+	unsigned  count = 0;
+	for (int i = 0; i < vertexesNumber; i++) {
+		if (matrix[x][i] != 0) {
+			count++;
+		}
+	}
+
+	return count;
+}
+
+void AbstractGraph::saveMatrix() {
+	std::ofstream graphFile;
+	graphFile.open(graphFilename);
+	if (graphFile.is_open()) {
+
+		for (unsigned row = 0; row < vertexesNumber; row++) {
+			for (unsigned col = 0; col < vertexesNumber; col++) {
+				graphFile << " " << matrix[row][col];
+			}
+			graphFile << std::endl;
+		}
+	}
+
+	graphFile.close();
 
 }
 
 void AbstractGraph::printMatrix() {
+
 	for (unsigned row = 0; row < vertexesNumber; row++) {
 		for (unsigned col = 0; col < vertexesNumber; col++) {
 			std::cout << " " << matrix[row][col];
 		}
 		std::cout << std::endl;
 	}
-}
 
+}
 
 inline int** AbstractGraph::getMatrix() {
 	return matrix;

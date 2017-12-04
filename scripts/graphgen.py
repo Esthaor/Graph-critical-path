@@ -4,6 +4,9 @@ import os
 import random
 import re
 from scipy import sparse
+import numpy
+
+numpy.set_printoptions(threshold=numpy.inf)
 
 OUTPUT_FILE = os.path.join("..", "gen", "graph.txt") 
 EDGE_CREATION_BASE = 0.44
@@ -32,6 +35,7 @@ def main():
     temp_graph_matrix = nx.adjacency_matrix(random_dag)
 
     graph_matrix = sparse.lil_matrix(temp_graph_matrix)
+    # graph_matrix = graph_matrix.transpose()
 
     string_matrix = ""
 

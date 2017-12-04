@@ -1,15 +1,33 @@
 #include<iostream>
 #include"../include/Incremental.h"
 
-unsigned VERTEXES = 10;
-std::string GRAPH_FILE = "gen/graph.txt";
+const bool TEST_MODE = false;
+const bool SAVE_MODE = true;
+const unsigned VERTEXES = 1000;
+const std::string GRAPH_FILE = "gen/graph.txt";
 
 void incremental(std::string graphFilename, unsigned vertexesNumber) {
 	Incremental* incremental = new Incremental(graphFilename, vertexesNumber);
+	
+	if (TEST_MODE) {
+		incremental->printMatrix();
+	}
 
-	incremental->printMatrix();
+	if (SAVE_MODE) {
+		incremental->saveMatrix();
+	}
 
-	// std::vector<unsigned> criticalPath = incremental->getCriticalPath();
+	clock_t t = clock();
+	Incremental::path* minValues = incremental->getCriticalPath();
+	t = clock() - t;
+
+	std::cout << "pathLength: " << minValues->pathLength << std::endl;
+	std::cout << "pathStart: " << minValues->pathStart << std::endl;
+	std::cout << "pathEnd: " << minValues->pathEnd << std::endl;
+	std::cout << "Calculated in: " << t << "[ms]" << std::endl;
+
+	delete incremental;
+	delete minValues;
 }
 
 
@@ -22,4 +40,5 @@ int main(int argc, char** argv) {
 		incremental(GRAPH_FILE, VERTEXES); // test mode
 	}
 	std::cin.get();
+
 }

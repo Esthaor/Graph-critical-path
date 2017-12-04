@@ -6,7 +6,7 @@
 #include<ctime>
 
 class AbstractGraph {
-
+	bool GENERATE_GRAPH = true;
 protected:
 	int** matrix;
 
@@ -15,6 +15,9 @@ protected:
 
 	inline int** getMatrix();
 	inline int getValueFromMatrix(unsigned x, unsigned y);
+
+	int rowCount(int y);
+	int colCount(int x);
 
 public:
 	struct path {
@@ -27,9 +30,11 @@ public:
 	virtual ~AbstractGraph();
 
 	void loadGraphFromFile(std::string filename);
+	void generateGraph();
 	inline int* getVertexEdges(unsigned vertexNumber);
 
 	void printMatrix();
+	void saveMatrix();
 
 	virtual AbstractGraph::path* getCriticalPath() = 0;
 

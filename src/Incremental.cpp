@@ -27,7 +27,7 @@ AbstractGraph::path* Incremental::getCriticalPath() {
 		}
 	}
 
-	res->pathLength = min;
+	res->pathLength = -min;
 	res->pathStart = minStart;
 	res->pathEnd = minEnd;
 	return res;
@@ -38,18 +38,25 @@ std::vector<long> Incremental::bellmanFord(unsigned row) {
 	std::vector<unsigned> predecessor;
 
 	for (int i = 0; i < vertexesNumber; i++) {
-		for (int j = 0; j < vertexesNumber; j++) {
-			distance.push_back(LONG_MAX);
-		}
+	//	for (int j = 0; j < vertexesNumber; j++) {
+		//	if (matrix[i][j] != 0) {
+				distance.push_back(LONG_MAX);
+		//	}
+	//	}
 	}
+
 	distance[row] = 0;
+	
 	for (int i = 0; i < vertexesNumber; i++) {
 		for (int j = 0; j < vertexesNumber; j++) {
-			if (distance[j] > distance[i] + matrix[i][j]) {
-				distance[j] = distance[i] + matrix[i][j];
-				predecessor.push_back(j);
+			if (matrix[i][j] != 0) {
+				if (distance[j] > distance[i] + matrix[i][j]) {
+					distance[j] = distance[i] + matrix[i][j];
+					predecessor.push_back(j);
+				}
 			}
 		}
 	}
+	
 	return distance;
 }
