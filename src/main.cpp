@@ -5,7 +5,7 @@
 
 const bool TEST_MODE = false;
 const bool SAVE_MODE = false;
-const unsigned VERTEXES = 1000;
+const unsigned VERTEXES = 250;
 const std::string GRAPH_FILE = "gen/graph.txt";
 
 void incremental(std::string graphFilename, unsigned vertexesNumber) {
