@@ -35,6 +35,6 @@
 .vs/*
 scripts/.vscode/*
 Debug/*
-x64/Debug/*
+x64/*
 CppProperties.json
 Graph-critical-path*

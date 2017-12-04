@@ -1,9 +1,6 @@
 #include"../include/AbstractGraph.h"
 
 void AbstractGraph::init(std::string graphFilename, unsigned vertexesNumber) {
-
-	std::cout << "AbstractGraph::AbstractGraph" << std::endl;
-
 	this->graphFilename = graphFilename;
 	this->vertexesNumber = vertexesNumber;
 
@@ -47,7 +44,7 @@ void AbstractGraph::loadGraphFromFile(std::string filename) {
 			std::istringstream line_stream(line);
 
 			while (std::getline(line_stream, edgeValue, ' ')) {
-				matrix[row_idx][col_idx] = std::stoul(edgeValue);
+				matrix[row_idx][col_idx] = std::stoi(edgeValue);
 				col_idx++;
 			}
 
@@ -124,7 +121,7 @@ void AbstractGraph::printMatrix() {
 
 	for (unsigned row = 0; row < vertexesNumber; row++) {
 		for (unsigned col = 0; col < vertexesNumber; col++) {
-			std::cout << " " << matrix[row][col];
+			std::cout << matrix[row][col] << " ";
 		}
 		std::cout << std::endl;
 	}

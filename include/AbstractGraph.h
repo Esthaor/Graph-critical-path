@@ -6,7 +6,7 @@
 #include<ctime>
 
 class AbstractGraph {
-	bool GENERATE_GRAPH = true;
+	bool GENERATE_GRAPH = false;
 protected:
 	int** matrix;
 
