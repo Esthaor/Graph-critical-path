@@ -61,3 +61,13 @@ std::vector<long> C11ThreadsVersion::bellmanFord(unsigned row) {
 
 	return distance;
 }
+
+
+/*
+
+ - dla grupy nodów wywo³ywaæ 1 w¹tek
+ - partycjonowanie sieci
+ - "zbyt drobne ziarno"
+ - najd³u¿sza œcie¿ka jeœli znadziemy uzasadnienie or powrót do wierzcho³ek A - wierzcho³ek B
+
+*/
