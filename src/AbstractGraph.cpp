@@ -12,7 +12,6 @@ void AbstractGraph::init(std::string graphFilename, unsigned vertexesNumber) {
 		for (int j = 0; j < vertexesNumber; j++) {
 			this->matrix[i][j] = 0;
 		}
-
 	}
 
 	if (GENERATE_GRAPH) {

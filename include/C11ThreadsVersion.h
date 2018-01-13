@@ -15,6 +15,7 @@ protected:
 	void parallelCode(int i);
 public:
 	C11ThreadsVersion(std::string graphFilename, unsigned vertexesNumber);
+	virtual AbstractGraph::path* getCriticalPath(unsigned vertexStart) override;
 	virtual AbstractGraph::path* getCriticalPath() override;
 	std::vector<long> bellmanFord(unsigned row);
 };

@@ -4,6 +4,11 @@ C11ThreadsVersion::C11ThreadsVersion(std::string graphFilename, unsigned vertexe
 	this->init(graphFilename, vertexesNumber);
 }
 
+AbstractGraph::path * C11ThreadsVersion::getCriticalPath(unsigned vertexStart)
+{
+	return nullptr;
+}
+
 AbstractGraph::path* C11ThreadsVersion::getCriticalPath() {
 	for (int i = 0; i < vertexesNumber; i++)
 		for (int j = 0; j < vertexesNumber; j++)
@@ -17,9 +22,9 @@ AbstractGraph::path* C11ThreadsVersion::getCriticalPath() {
 		threads[i].join();
 	}
 
-	res->pathLength = -min;
-	res->pathStart = minStart;
-	res->pathEnd = minEnd;
+	//res->pathLength = -min;
+	//res->pathStart = minStart;
+	//res->pathEnd = minEnd;
 	return res;
 }
 

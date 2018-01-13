@@ -7,7 +7,7 @@
 #include<ctime>
 
 class AbstractGraph {
-	bool GENERATE_GRAPH = true;
+	bool GENERATE_GRAPH = false;
 protected:
 	int** matrix;
 
@@ -23,8 +23,7 @@ protected:
 public:
 	struct path {
 		int pathLength;
-		int pathStart;
-		int pathEnd;
+		std::vector<unsigned> vertexes;
 	};
 
 	void init(std::string graphFilename, unsigned vertexesNumber);
@@ -37,6 +36,8 @@ public:
 	void printMatrix();
 	void saveMatrix();
 
+	virtual AbstractGraph::path* getCriticalPath(unsigned vertexNumber) = 0;
 	virtual AbstractGraph::path* getCriticalPath() = 0;
+
 
 };

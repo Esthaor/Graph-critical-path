@@ -4,45 +4,49 @@ Incremental::Incremental(std::string graphFilename, unsigned vertexesNumber) {
 	this->init(graphFilename, vertexesNumber);
 }
 
-AbstractGraph::path* Incremental::getCriticalPath() {
-	for (int i = 0; i < vertexesNumber; i++)
+AbstractGraph::path* Incremental::getCriticalPath(unsigned vertexStart) {
+	for (int i = 0; i < vertexesNumber; i++)	// ujemne wagi
 		for (int j = 0; j < vertexesNumber; j++)
 			matrix[i][j] = -matrix[i][j];
 
 	path* res = new path();
 
-	int min = 0;
-	int minStart = 0;
-	int minEnd = 0;
+	std::pair<std::vector<long>, std::vector<unsigned>>* pair = bellmanFord(vertexStart);
+	int intIndex = std::min_element(pair->first.begin(), pair->first.end()) - pair->first.begin();
+	res->pathLength = -pair->first[intIndex];
 
-	for (int i = 0; i < vertexesNumber; i++) {
-		std::vector<long> longest = bellmanFord(i);
-		int intIndex = std::min_element(longest.begin(), longest.end()) - longest.begin();
-		int pathLength = longest[intIndex];
+//	res->vertexes = findPath(intIndex, pair->second);
 
-		if (pathLength < min) {
-			min = pathLength;
-			minStart = i;
-			minEnd = intIndex;
-		}
-	}
-
-	res->pathLength = -min;
-	res->pathStart = minStart;
-	res->pathEnd = minEnd;
 	return res;
 }
 
-std::vector<long> Incremental::bellmanFord(unsigned row) {
+// deprecated
+std::vector<unsigned> Incremental::findPath(int index, std::vector<unsigned> predecessors) {
+	int ite = index;
+	std::vector<unsigned> vertexes;
+
+	while (ite != 1){
+		vertexes.push_back(ite);	
+		ite = predecessors[ite - 1];
+	}
+
+	vertexes.push_back(ite);
+	
+	std::reverse(vertexes.begin(), vertexes.end());
+
+	return vertexes;
+}
+
+AbstractGraph::path* Incremental::getCriticalPath() {
+	return this->getCriticalPath(0);
+}
+
+std::pair<std::vector<long>, std::vector<unsigned>>* Incremental::bellmanFord(unsigned row) {
 	std::vector<long> distance;
 	std::vector<unsigned> predecessor;
 
 	for (int i = 0; i < vertexesNumber; i++) {
-	//	for (int j = 0; j < vertexesNumber; j++) {
-		//	if (matrix[i][j] != 0) {
-				distance.push_back(LONG_MAX);
-		//	}
-	//	}
+		distance.push_back(LONG_MAX);
 	}
 
 	distance[row] = 0;
@@ -58,5 +62,5 @@ std::vector<long> Incremental::bellmanFord(unsigned row) {
 		}
 	}
 	
-	return distance;
+	return new std::pair<std::vector<long>, std::vector<unsigned>>(distance, predecessor);
 }
