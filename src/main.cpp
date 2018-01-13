@@ -2,7 +2,7 @@
 #include"../include/Incremental.h"
 #include"../include/C11ThreadsVersion.h"
 #include"../include/OpenMPVersion.h"
-
+#include"../include/CUDAVersion.cuh"
 
 const bool TEST_MODE = false;
 const bool SAVE_MODE = false;
@@ -58,6 +58,28 @@ void parallelOpenMp(std::string graphFilename, unsigned vertexesNumber) {
 
 	clock_t t = clock();
 	OpenMPVersion::path* path = openmp->getCriticalPath();
+	t = clock() - t;
+
+	std::cout << "pathLength: " << path->pathLength << std::endl;
+	std::cout << "Calculated in: " << t << "[ms]" << std::endl;
+
+	delete openmp;
+	delete path;
+}
+
+void parallelCUDA(std::string graphFilename, unsigned vertexesNumber) {
+	CUDAVersion* openmp = new CUDAVersion(graphFilename, vertexesNumber);
+
+	if (TEST_MODE) {
+		openmp->printMatrix();
+	}
+
+	if (SAVE_MODE) {
+		openmp->saveMatrix();
+	}
+
+	clock_t t = clock();
+	CUDAVersion::path* path = openmp->getCriticalPath();
 	t = clock() - t;
 
 	std::cout << "pathLength: " << path->pathLength << std::endl;
