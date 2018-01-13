@@ -23,6 +23,25 @@ AbstractGraph::path * CUDAVersion::getCriticalPath() {
 	return getCriticalPath(0);
 }
 
+__global__ void kernel(int vertexesNumber, long** matrix, long* distance) {
+	int globalIndex = blockDim.x * blockIdx.x + threadIdx.x;
+	int offset = blockDim.x * gridDim.x;
+
+	if (globalIndex >= vertexesNumber)
+		return;
+
+	for (int i = 0; i < vertexesNumber; i++) {
+		for (int j = globalIndex; j < vertexesNumber; j += offset) {
+			if (matrix[i][j] != 0) {
+				if (distance[j] > distance[i] + matrix[i][j]) {
+					distance[j] = distance[i] + matrix[i][j];
+				}
+			}
+		}
+	}
+
+}
+
 void CUDAVersion::bellmanFord(unsigned row, std::pair<std::vector<long>, std::vector<unsigned>>* pair) {
 	long* distance = new long[vertexesNumber];
 	long* cuda_distance;
@@ -57,25 +76,3 @@ void CUDAVersion::bellmanFord(unsigned row, std::pair<std::vector<long>, std::ve
 	pair->first = std::vector<long>(distance, distance + vertexesNumber * sizeof(long));
 	pair->second = predecessor;
 }
-
-__global__ void CUDAVersion::kernel(int vertexesNumber, long** matrix, long* distance) {
-	int globalIndex = blockDim.x * blockIdx.x + threadIdx.x;
-	int offset = blockDim.x * gridDim.x;
-
-	if (globalIndex >= vertexesNumber)
-		return;
-
-	for (int i = 0; i < vertexesNumber; i++) {
-		for (int j = globalIndex; j < vertexesNumber; j += offset) {
-			if (matrix[i][j] != 0) {
-				if (distance[j] > distance[i] + matrix[i][j]) {
-					distance[j] = distance[i] + matrix[i][j];
-				}
-			}
-		}
-	}
-	
-}
-
-
-

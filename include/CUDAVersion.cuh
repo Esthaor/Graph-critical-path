@@ -11,9 +11,9 @@ class CUDAVersion: public AbstractGraph {
 	const unsigned blocksNumber = 1;
 	const unsigned threadsNumber = 32;
 
-	__global__ void kernel(int vertexesNumber, long** matrix, long* distance);
 
 public:
+	//__global__ void kernel(int vertexesNumber, long** matrix, long* distance);
 	CUDAVersion(std::string graphFilename, unsigned vertexesNumber);
 	virtual AbstractGraph::path * CUDAVersion::getCriticalPath(unsigned vertexStart) override;
 	virtual AbstractGraph::path* getCriticalPath() override;
