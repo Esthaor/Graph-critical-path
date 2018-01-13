@@ -1,11 +1,12 @@
 #include<iostream>
 #include"../include/Incremental.h"
 #include"../include/C11ThreadsVersion.h"
+#include"../include/OpenMPVersion.h"
 
 
 const bool TEST_MODE = false;
 const bool SAVE_MODE = false;
-const unsigned VERTEXES = 5;
+const unsigned VERTEXES = 30000;
 const std::string GRAPH_FILE = "gen/graph.txt";
 
 void printVector(std::vector<unsigned> v) {
@@ -44,6 +45,28 @@ void incremental(std::string graphFilename, unsigned vertexesNumber) {
 	delete path;
 }
 
+void parallelOpenMp(std::string graphFilename, unsigned vertexesNumber) {
+	OpenMPVersion* openmp = new OpenMPVersion(graphFilename, vertexesNumber);
+
+	if (TEST_MODE) {
+		openmp->printMatrix();
+	}
+
+	if (SAVE_MODE) {
+		openmp->saveMatrix();
+	}
+
+	clock_t t = clock();
+	OpenMPVersion::path* path = openmp->getCriticalPath();
+	t = clock() - t;
+
+	std::cout << "pathLength: " << path->pathLength << std::endl;
+	std::cout << "Calculated in: " << t << "[ms]" << std::endl;
+
+	delete openmp;
+	delete path;
+}
+
 void parallelC11Threads(std::string graphFilename, unsigned vertexesNumber) {
 	C11ThreadsVersion* threadsVersion = new C11ThreadsVersion(graphFilename, vertexesNumber);
 
@@ -76,7 +99,8 @@ int main(int argc, char** argv) {
 		incremental(GRAPH_FILE, std::stoul(argv[1])); // default mode
 	}
 	else {
-		incremental(GRAPH_FILE, VERTEXES); // test mode
+		parallelOpenMp(GRAPH_FILE, VERTEXES);
+		//incremental(GRAPH_FILE, VERTEXES); // test mode
 		//parallelC11Threads(GRAPH_FILE, VERTEXES); // test mode
 	}
 	std::cin.get();

@@ -22,7 +22,6 @@ void AbstractGraph::init(std::string graphFilename, unsigned vertexesNumber) {
 }
 
 AbstractGraph::~AbstractGraph() {
-
 	for (int i = 0; i < vertexesNumber; i++) {
 		delete this->matrix[i];
 	}

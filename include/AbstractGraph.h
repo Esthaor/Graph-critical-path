@@ -38,6 +38,4 @@ public:
 
 	virtual AbstractGraph::path* getCriticalPath(unsigned vertexNumber) = 0;
 	virtual AbstractGraph::path* getCriticalPath() = 0;
-
-
 };
