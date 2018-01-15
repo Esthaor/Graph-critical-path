@@ -7,9 +7,11 @@
 #include<ctime>
 
 class AbstractGraph {
-	bool GENERATE_GRAPH = false;
 protected:
+	bool GENERATE_GRAPH = false;
+	bool usingLinearMatrix;
 	int** matrix;
+	int* linear_matrix;
 
 	std::string graphFilename;
 	unsigned vertexesNumber;
@@ -19,6 +21,7 @@ protected:
 
 	int rowCount(int y);
 	int colCount(int x);
+
 
 public:
 	struct path {
@@ -38,4 +41,6 @@ public:
 
 	virtual AbstractGraph::path* getCriticalPath(unsigned vertexNumber) = 0;
 	virtual AbstractGraph::path* getCriticalPath() = 0;
+
+	virtual bool linearMatrix() = 0;
 };

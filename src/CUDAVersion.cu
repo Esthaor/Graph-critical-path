@@ -4,12 +4,14 @@ CUDAVersion::CUDAVersion(std::string graphFilename, unsigned vertexesNumber){
 	this->init(graphFilename, vertexesNumber);
 }
 
-AbstractGraph::path * CUDAVersion::getCriticalPath(unsigned vertexStart) {
+AbstractGraph::path* CUDAVersion::getCriticalPath(unsigned vertexStart) {
 	for (int i = 0; i < vertexesNumber; i++)	// ujemne wagi
 		for (int j = 0; j < vertexesNumber; j++)
-			matrix[i][j] = -matrix[i][j];
+			linear_matrix[i * vertexesNumber + j] = -linear_matrix[i * vertexesNumber + j];
 
 	path* res = new path();
+
+	cudaDeviceReset();
 
 	std::pair<std::vector<long>, std::vector<unsigned>> pair;
 	bellmanFord(vertexStart, &pair);
@@ -23,7 +25,7 @@ AbstractGraph::path * CUDAVersion::getCriticalPath() {
 	return getCriticalPath(0);
 }
 
-__global__ void kernel(int vertexesNumber, long** matrix, long* distance) {
+__global__ void kernel(int vertexesNumber, long* matrix, long* distance) {
 	int globalIndex = blockDim.x * blockIdx.x + threadIdx.x;
 	int offset = blockDim.x * gridDim.x;
 
@@ -32,20 +34,19 @@ __global__ void kernel(int vertexesNumber, long** matrix, long* distance) {
 
 	for (int i = 0; i < vertexesNumber; i++) {
 		for (int j = globalIndex; j < vertexesNumber; j += offset) {
-			if (matrix[i][j] != 0) {
-				if (distance[j] > distance[i] + matrix[i][j]) {
-					distance[j] = distance[i] + matrix[i][j];
+			if (matrix[i * vertexesNumber + j] != 0) {
+				if (distance[j] > distance[i] + matrix[i * vertexesNumber + j]) {
+					distance[j] = distance[i] + matrix[i * vertexesNumber + j];
 				}
 			}
 		}
 	}
-
 }
 
 void CUDAVersion::bellmanFord(unsigned row, std::pair<std::vector<long>, std::vector<unsigned>>* pair) {
 	long* distance = new long[vertexesNumber];
 	long* cuda_distance;
-	long** cuda_matrix;
+	long* cuda_matrix;
 	std::vector<unsigned> predecessor;
 
 	dim3 blocks(blocksNumber);
@@ -59,8 +60,8 @@ void CUDAVersion::bellmanFord(unsigned row, std::pair<std::vector<long>, std::ve
 	}
 
 	distance[row] = 0;
-	cudaMemcpy(cuda_distance, &distance, sizeof(long) * vertexesNumber, cudaMemcpyHostToDevice);
-	cudaMemcpy(cuda_matrix, matrix, sizeof(long) * vertexesNumber * vertexesNumber, cudaMemcpyHostToDevice);
+	cudaMemcpy(cuda_distance, distance, sizeof(long) * vertexesNumber, cudaMemcpyHostToDevice);
+	cudaMemcpy(cuda_matrix, linear_matrix, sizeof(long) * vertexesNumber * vertexesNumber, cudaMemcpyHostToDevice);
 
 	//void* args[] = { &vertexesNumber, cuda_matrix, cuda_distance};
 	//cudaLaunchKernel((const void*)&kernel, blocks, threads, args);
@@ -68,10 +69,13 @@ void CUDAVersion::bellmanFord(unsigned row, std::pair<std::vector<long>, std::ve
 	kernel<<<blocks, threads>>>(vertexesNumber, cuda_matrix, cuda_distance);
 	cudaDeviceSynchronize();
 
-	cudaMemcpy(&distance, cuda_distance, sizeof(long) * vertexesNumber, cudaMemcpyHostToDevice);
+	cudaMemcpy(distance, cuda_distance, sizeof(long) * vertexesNumber, cudaMemcpyDeviceToHost);
 
 	cudaFree(cuda_matrix);
 	cudaFree(cuda_distance);
+
+	for (int k = 0; k < vertexesNumber; k++)
+		std::cout << distance[k];
 
 	pair->first = std::vector<long>(distance, distance + vertexesNumber * sizeof(long));
 	pair->second = predecessor;

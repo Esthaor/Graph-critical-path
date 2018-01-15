@@ -18,5 +18,7 @@ public:
 	virtual AbstractGraph::path* getCriticalPath(unsigned vertexStart) override;
 	virtual AbstractGraph::path* getCriticalPath() override;
 	std::vector<long> bellmanFord(unsigned row);
+
+	virtual bool linearMatrix() override { return false; };
 };
 

@@ -121,9 +121,9 @@ int main(int argc, char** argv) {
 		incremental(GRAPH_FILE, std::stoul(argv[1])); // default mode
 	}
 	else {
+		//incremental(GRAPH_FILE, VERTEXES); // test mode
 		parallelCUDA(GRAPH_FILE, VERTEXES);
 		//parallelOpenMp(GRAPH_FILE, VERTEXES);
-		//incremental(GRAPH_FILE, VERTEXES); // test mode
 		//parallelC11Threads(GRAPH_FILE, VERTEXES); // test mode
 	}
 	std::cin.get();
