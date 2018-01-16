@@ -7,7 +7,7 @@
 
 const bool TEST_MODE = false;
 const bool SAVE_MODE = false;
-const unsigned VERTEXES = 15000;
+const unsigned VERTEXES = 10000;
 const std::string GRAPH_FILE = "gen/graph.txt";
 
 void printVector(std::vector<unsigned> v) {
@@ -94,25 +94,28 @@ void parallelOpenMp(std::string graphFilename, unsigned vertexesNumber) {
 }
 
 void parallelCUDA(std::string graphFilename, unsigned vertexesNumber) {
-	CUDAVersion* openmp = new CUDAVersion(graphFilename, vertexesNumber);
+	CUDAVersion* cuda = new CUDAVersion(graphFilename, vertexesNumber);
 
 	if (TEST_MODE) {
-		openmp->printMatrix();
+		cuda->printMatrix();
 	}
 
 	if (SAVE_MODE) {
-		openmp->saveMatrix();
+		cuda->saveMatrix();
 	}
 
 	clock_t t = clock();
-	CUDAVersion::path* path = openmp->getCriticalPath();
+	CUDAVersion::path* path = cuda->getCriticalPath();
 	t = clock() - t;
 
 	std::cout << "CUDA" << std::endl;
+	std::cout << "Threads per block: " << cuda->getThreadsNumber() << std::endl;
+	std::cout << "Blocks per grid: " << cuda->getBlocksNumber() << std::endl;
 	std::cout << "pathLength: " << path->pathLength << std::endl;
-	std::cout << "Calculated in: " << t << "[ms]\n" << std::endl;
-
-	delete openmp;
+	std::cout << "Calculated in: " << t << "[ms]" << std::endl;
+	std::cout << "Kerneles calculated in: " << cuda->getMiliseconds() << "[ms]\n" << std::endl;
+	
+	delete cuda;
 	delete path;
 }
 
@@ -131,10 +134,8 @@ void parallelC11Threads(std::string graphFilename, unsigned vertexesNumber) {
 	C11ThreadsVersion::path* path = threadsVersion->getCriticalPath();
 	t = clock() - t;
 
+	std::cout << "C11Threads" << std::endl;
 	std::cout << "pathLength: " << path->pathLength << std::endl;
-
-	//printVector(path->vertexes);
-
 	std::cout << "Calculated in: " << t << "[ms]" << std::endl;
 
 	delete threadsVersion;
@@ -151,8 +152,8 @@ int main(int argc, char** argv) {
 		//incremental(GRAPH_FILE, VERTEXES); // test mode
 		//incrementalLinear(GRAPH_FILE, VERTEXES);
 		parallelOpenMp(GRAPH_FILE, VERTEXES);
-		parallelCUDA(GRAPH_FILE, VERTEXES);
-		//parallelC11Threads(GRAPH_FILE, VERTEXES); // test mode
+		parallelC11Threads(GRAPH_FILE, VERTEXES); // test mode
+		//parallelCUDA(GRAPH_FILE, VERTEXES);
 	}
 	std::cin.get();
 

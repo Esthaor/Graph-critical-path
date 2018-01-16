@@ -6,18 +6,16 @@
 
 class C11ThreadsVersion : public AbstractGraph {
 protected:
-	std::mutex mtx;
+	std::mutex mtxDistanceInit;
+	std::mutex mtxDistanceRuntime;
 
-	int min = 0;
-	int minStart = 0;
-	int minEnd = 0;
+	long* distance;
 
-	void parallelCode(int i);
 public:
 	C11ThreadsVersion(std::string graphFilename, unsigned vertexesNumber);
 	virtual AbstractGraph::path* getCriticalPath(unsigned vertexStart) override;
 	virtual AbstractGraph::path* getCriticalPath() override;
-	std::vector<long> bellmanFord(unsigned row);
+	void bellmanFord(const int threadIndex, unsigned row);
 
 	virtual bool linearMatrix() override { return false; };
 };
