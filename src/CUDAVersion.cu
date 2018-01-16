@@ -2,6 +2,11 @@
 
 CUDAVersion::CUDAVersion(std::string graphFilename, unsigned vertexesNumber){
 	this->init(graphFilename, vertexesNumber);
+
+	cudaDeviceProp properties;
+	cudaGetDeviceProperties(&properties, 0);
+	threadsNumber = properties.maxThreadsDim[0];
+	blocksNumber = std::min(properties.maxGridSize[0], ((int)vertexesNumber + threadsNumber - 1) / threadsNumber);
 }
 
 AbstractGraph::path* CUDAVersion::getCriticalPath(unsigned vertexStart) {
@@ -25,7 +30,7 @@ AbstractGraph::path * CUDAVersion::getCriticalPath() {
 	return getCriticalPath(0);
 }
 
-__global__ void kernel(int vertexesNumber, long* matrix, long* distance) {
+__global__ void kernel(unsigned vertexesNumber, long* matrix, long* distance) {
 	int globalIndex = blockDim.x * blockIdx.x + threadIdx.x;
 	int offset = blockDim.x * gridDim.x;
 
@@ -67,6 +72,8 @@ void CUDAVersion::bellmanFord(unsigned row, std::pair<std::vector<long>, std::ve
 	//cudaLaunchKernel((const void*)&kernel, blocks, threads, args);
 
 	kernel<<<blocks, threads>>>(vertexesNumber, cuda_matrix, cuda_distance);
+	//kernel <<<blocksNumber, threadsNumber>>>(vertexesNumber, cuda_matrix, cuda_distance);
+
 	cudaDeviceSynchronize();
 
 	cudaMemcpy(distance, cuda_distance, sizeof(long) * vertexesNumber, cudaMemcpyDeviceToHost);
@@ -74,9 +81,13 @@ void CUDAVersion::bellmanFord(unsigned row, std::pair<std::vector<long>, std::ve
 	cudaFree(cuda_matrix);
 	cudaFree(cuda_distance);
 
-	for (int k = 0; k < vertexesNumber; k++)
-		std::cout << distance[k];
+	//for (int k = 0; k < vertexesNumber; k++)
+	//	std::cout << distance[k] << std::endl;
 
-	pair->first = std::vector<long>(distance, distance + vertexesNumber * sizeof(long));
+	pair->first = std::vector<long>(distance, distance + vertexesNumber);
+
+	//for(int w = 0; w < vertexesNumber; w++)
+	//	std::cout << pair->first[w] << std::endl;
+
 	pair->second = predecessor;
 }

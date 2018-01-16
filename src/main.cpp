@@ -1,12 +1,13 @@
 #include<iostream>
 #include"../include/Incremental.h"
+#include"../include/IncrementalLinear.h"
 #include"../include/C11ThreadsVersion.h"
 #include"../include/OpenMPVersion.h"
 #include"../include/CUDAVersion.cuh"
 
 const bool TEST_MODE = false;
 const bool SAVE_MODE = false;
-const unsigned VERTEXES = 30000;
+const unsigned VERTEXES = 640;
 const std::string GRAPH_FILE = "gen/graph.txt";
 
 void printVector(std::vector<unsigned> v) {
@@ -35,11 +36,35 @@ void incremental(std::string graphFilename, unsigned vertexesNumber) {
 	Incremental::path* path = incremental->getCriticalPath();
 	t = clock() - t;
 
+	std::cout << "Incremental" << std::endl;
 	std::cout << "pathLength: " << path->pathLength << std::endl;
 
 	//printVector(path->vertexes);
 
-	std::cout << "Calculated in: " << t << "[ms]" << std::endl;
+	std::cout << "Calculated in: " << t << "[ms]\n" << std::endl;
+
+	delete incremental;
+	delete path;
+}
+
+void incrementalLinear(std::string graphFilename, unsigned vertexesNumber) {
+	IncrementalLinear* incremental = new IncrementalLinear(graphFilename, vertexesNumber);
+
+	if (TEST_MODE) {
+		incremental->printMatrix();
+	}
+
+	if (SAVE_MODE) {
+		incremental->saveMatrix();
+	}
+
+	clock_t t = clock();
+	IncrementalLinear::path* path = incremental->getCriticalPath();
+	t = clock() - t;
+
+	std::cout << "IncrementalLinear" << std::endl;
+	std::cout << "pathLength: " << path->pathLength << std::endl;
+	std::cout << "Calculated in: " << t << "[ms]\n" << std::endl;
 
 	delete incremental;
 	delete path;
@@ -60,8 +85,9 @@ void parallelOpenMp(std::string graphFilename, unsigned vertexesNumber) {
 	OpenMPVersion::path* path = openmp->getCriticalPath();
 	t = clock() - t;
 
+	std::cout << "OpenMP" << std::endl;
 	std::cout << "pathLength: " << path->pathLength << std::endl;
-	std::cout << "Calculated in: " << t << "[ms]" << std::endl;
+	std::cout << "Calculated in: " << t << "[ms]\n" << std::endl;
 
 	delete openmp;
 	delete path;
@@ -82,8 +108,9 @@ void parallelCUDA(std::string graphFilename, unsigned vertexesNumber) {
 	CUDAVersion::path* path = openmp->getCriticalPath();
 	t = clock() - t;
 
+	std::cout << "CUDA" << std::endl;
 	std::cout << "pathLength: " << path->pathLength << std::endl;
-	std::cout << "Calculated in: " << t << "[ms]" << std::endl;
+	std::cout << "Calculated in: " << t << "[ms]\n" << std::endl;
 
 	delete openmp;
 	delete path;
@@ -121,9 +148,11 @@ int main(int argc, char** argv) {
 		incremental(GRAPH_FILE, std::stoul(argv[1])); // default mode
 	}
 	else {
-		//incremental(GRAPH_FILE, VERTEXES); // test mode
+		incremental(GRAPH_FILE, VERTEXES); // test mode
+		incrementalLinear(GRAPH_FILE, VERTEXES);
+		parallelOpenMp(GRAPH_FILE, VERTEXES);
 		parallelCUDA(GRAPH_FILE, VERTEXES);
-		//parallelOpenMp(GRAPH_FILE, VERTEXES);
+
 		//parallelC11Threads(GRAPH_FILE, VERTEXES); // test mode
 	}
 	std::cin.get();
