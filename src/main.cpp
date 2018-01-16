@@ -7,7 +7,7 @@
 
 const bool TEST_MODE = false;
 const bool SAVE_MODE = false;
-const unsigned VERTEXES = 640;
+const unsigned VERTEXES = 15000;
 const std::string GRAPH_FILE = "gen/graph.txt";
 
 void printVector(std::vector<unsigned> v) {
@@ -148,11 +148,10 @@ int main(int argc, char** argv) {
 		incremental(GRAPH_FILE, std::stoul(argv[1])); // default mode
 	}
 	else {
-		incremental(GRAPH_FILE, VERTEXES); // test mode
-		incrementalLinear(GRAPH_FILE, VERTEXES);
+		//incremental(GRAPH_FILE, VERTEXES); // test mode
+		//incrementalLinear(GRAPH_FILE, VERTEXES);
 		parallelOpenMp(GRAPH_FILE, VERTEXES);
 		parallelCUDA(GRAPH_FILE, VERTEXES);
-
 		//parallelC11Threads(GRAPH_FILE, VERTEXES); // test mode
 	}
 	std::cin.get();

@@ -9,8 +9,8 @@
 
 class CUDAVersion: public AbstractGraph {
 
-	int blocksNumber;
-	int threadsNumber;
+	int blocksNumber = 1;
+	int threadsNumber = 32;
 
 public:
 	CUDAVersion(std::string graphFilename, unsigned vertexesNumber);

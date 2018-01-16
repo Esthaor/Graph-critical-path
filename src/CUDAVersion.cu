@@ -3,10 +3,11 @@
 CUDAVersion::CUDAVersion(std::string graphFilename, unsigned vertexesNumber){
 	this->init(graphFilename, vertexesNumber);
 
-	cudaDeviceProp properties;
+	/*cudaDeviceProp properties;
 	cudaGetDeviceProperties(&properties, 0);
 	threadsNumber = properties.maxThreadsDim[0];
 	blocksNumber = std::min(properties.maxGridSize[0], ((int)vertexesNumber + threadsNumber - 1) / threadsNumber);
+	*/
 }
 
 AbstractGraph::path* CUDAVersion::getCriticalPath(unsigned vertexStart) {
