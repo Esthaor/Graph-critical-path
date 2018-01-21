@@ -3,6 +3,9 @@
 C11ThreadsVersion::C11ThreadsVersion(std::string graphFilename, unsigned vertexesNumber) {
 	this->init(graphFilename, vertexesNumber);
 	distance = new long[vertexesNumber];
+	mutexes = new std::vector<std::mutex*>(vertexesNumber);
+	for (int i = 0; i < vertexesNumber; i++)
+		mutexes->at(i) = new std::mutex();
 }
 
 AbstractGraph::path * C11ThreadsVersion::getCriticalPath(unsigned vertexStart)
@@ -40,10 +43,10 @@ void C11ThreadsVersion::bellmanFord(const int threadIndex, unsigned row) {
 
 	for (int j = 0; j < vertexesNumber; j++) {
 		if (matrix[threadIndex][j] != 0) {
-			mtxDistanceRuntime.lock();
 			if (distance[j] > distance[threadIndex] + matrix[threadIndex][j]) {
+				mutexes->at(j)->lock();
 				distance[j] = distance[threadIndex] + matrix[threadIndex][j];
-			mtxDistanceRuntime.unlock();
+				mutexes->at(j)->unlock();
 			}
 		}
 	}

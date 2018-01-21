@@ -9,14 +9,22 @@
 
 class CUDAVersion: public AbstractGraph {
 
-	int blocksNumber = 1;
-	int threadsNumber = 32;
+	int blocksNumber;
+	int threadsNumber;
+
+	cudaEvent_t start, stop;
+	float miliseconds = 0;
 
 public:
 	CUDAVersion(std::string graphFilename, unsigned vertexesNumber);
 	virtual AbstractGraph::path* getCriticalPath(unsigned vertexStart) override;
 	virtual AbstractGraph::path* getCriticalPath() override;
-	void bellmanFord(unsigned row, std::pair<std::vector<long>, std::vector<unsigned>>* pair);
+	void bellmanFord(unsigned row, std::pair<std::vector<int>, std::vector<unsigned>>* pair);
+	void bf(unsigned row, std::pair<std::vector<int>, std::vector<unsigned>>* pair);
+
+	float getMiliseconds() { return miliseconds; };
+	int getBlocksNumber() { return blocksNumber; };
+	int getThreadsNumber() { return threadsNumber; };
 
 	virtual bool linearMatrix() override { return true; };
 };

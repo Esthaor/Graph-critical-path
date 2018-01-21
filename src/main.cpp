@@ -21,7 +21,7 @@ void printVector(std::vector<unsigned> v) {
 	std::cout << std::endl;
 }
 
-void incremental(std::string graphFilename, unsigned vertexesNumber) {
+int incremental(std::string graphFilename, unsigned vertexesNumber) {
 	Incremental* incremental = new Incremental(graphFilename, vertexesNumber);
 	
 	if (TEST_MODE) {
@@ -36,6 +36,8 @@ void incremental(std::string graphFilename, unsigned vertexesNumber) {
 	Incremental::path* path = incremental->getCriticalPath();
 	t = clock() - t;
 
+	int len = path->pathLength;
+
 	std::cout << "Incremental" << std::endl;
 	std::cout << "pathLength: " << path->pathLength << std::endl;
 
@@ -45,6 +47,8 @@ void incremental(std::string graphFilename, unsigned vertexesNumber) {
 
 	delete incremental;
 	delete path;
+
+	return len;
 }
 
 void incrementalLinear(std::string graphFilename, unsigned vertexesNumber) {
@@ -149,11 +153,12 @@ int main(int argc, char** argv) {
 		incremental(GRAPH_FILE, std::stoul(argv[1])); // default mode
 	}
 	else {
-		//incremental(GRAPH_FILE, VERTEXES); // test mode
+		//parallelOpenMp(GRAPH_FILE, VERTEXES);
+		//int len = incremental(GRAPH_FILE, VERTEXES); // test mode
 		//incrementalLinear(GRAPH_FILE, VERTEXES);
-		parallelOpenMp(GRAPH_FILE, VERTEXES);
-		parallelC11Threads(GRAPH_FILE, VERTEXES); // test mode
-		//parallelCUDA(GRAPH_FILE, VERTEXES);
+		//parallelC11Threads(GRAPH_FILE, VERTEXES); // test mode
+		parallelCUDA(GRAPH_FILE, VERTEXES);
+		//std::cout << "Length: " << len << std::endl;
 	}
 	std::cin.get();
 

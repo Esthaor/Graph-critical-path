@@ -6,8 +6,8 @@
 
 class C11ThreadsVersion : public AbstractGraph {
 protected:
-	std::mutex mtxDistanceInit;
-	std::mutex mtxDistanceRuntime;
+	//std::mutex mtxDistanceInit;
+	std::vector<std::mutex*>* mutexes;
 
 	long* distance;
 

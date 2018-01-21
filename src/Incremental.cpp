@@ -52,9 +52,9 @@ std::pair<std::vector<long>, std::vector<unsigned>>* Incremental::bellmanFord(un
 	distance[row] = 0;
 	
 	for (int i = 0; i < vertexesNumber; i++) {
-		for (int j = 0; j < vertexesNumber; j++) { // odpowiada za wszystkie krawêdzie wychodz¹ce z wierzcholka i
-			if (matrix[i][j] != 0) {				// pomijamy nieistniejace krawedzie
-				if (distance[j] > distance[i] + matrix[i][j]) {		//jezeli dotychczasowy dystans jest wiekszy 
+		for (int j = 0; j < vertexesNumber; j++) { 
+			if (matrix[i][j] != 0) {
+				if (distance[j] > distance[i] + matrix[i][j]) {
 					distance[j] = distance[i] + matrix[i][j];
 					predecessor.push_back(j);
 				}
