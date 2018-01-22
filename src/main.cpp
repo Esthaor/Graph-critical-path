@@ -1,13 +1,8 @@
 #include<iostream>
 #include"../include/Incremental.h"
-#include"../include/IncrementalLinear.h"
-#include"../include/IncrementalAdjacencyTable.h"
 #include"../include/C11ThreadsVersion.h"
 #include"../include/OpenMPVersion.h"
 #include"../include/CUDAVersion.cuh"
-#include"../include/CudaVersion2.cuh"
-#include"../include/CudaVersion3.cuh"
-
 
 #define VERTEXES 5000
 
@@ -47,52 +42,6 @@ int incremental(std::string graphFilename, unsigned vertexesNumber) {
 	delete path;
 
 	return len;
-}
-
-void incrementalLinear(std::string graphFilename, unsigned vertexesNumber) {
-	IncrementalLinear* incremental = new IncrementalLinear(graphFilename, vertexesNumber);
-
-	if (TEST_MODE) {
-		incremental->printMatrix();
-	}
-
-	if (SAVE_MODE) {
-		incremental->saveMatrix();
-	}
-
-	clock_t t = clock();
-	IncrementalLinear::path* path = incremental->getCriticalPath();
-	t = clock() - t;
-
-	std::cout << "IncrementalLinear" << std::endl;
-	std::cout << "pathLength: " << path->pathLength << std::endl;
-	std::cout << "Calculated in: " << t << "[ms]\n" << std::endl;
-
-	delete incremental;
-	delete path;
-}
-
-void incrementalAdjacencyTable(std::string graphFilename, unsigned vertexesNumber) {
-	IncrementalAdjacencyTable* incremental = new IncrementalAdjacencyTable(graphFilename, vertexesNumber);
-
-	if (TEST_MODE) {
-		incremental->printMatrix();
-	}
-
-	if (SAVE_MODE) {
-		incremental->saveMatrix();
-	}
-
-	clock_t t = clock();
-	IncrementalAdjacencyTable::path* path = incremental->getCriticalPath();
-	t = clock() - t;
-
-	std::cout << "IncrementalAdjacencyTable" << std::endl;
-	std::cout << "pathLength: " << path->pathLength << std::endl;
-	std::cout << "Calculated in: " << t << "[ms]\n" << std::endl;
-
-	delete incremental;
-	delete path;
 }
 
 void parallelOpenMp(std::string graphFilename, unsigned vertexesNumber) {
@@ -143,55 +92,6 @@ void parallelCUDA(std::string graphFilename, unsigned vertexesNumber) {
 	delete cuda;
 	delete path;
 }
-
-void parallelCUDA2(std::string graphFilename, unsigned vertexesNumber) {
-	CudaVersion2* cuda = new CudaVersion2(graphFilename, vertexesNumber);
-
-	if (TEST_MODE) {
-		cuda->printMatrix();
-	}
-
-	if (SAVE_MODE) {
-		cuda->saveMatrix();
-	}
-
-	clock_t t = clock();
-	CudaVersion2::path* path = cuda->getCriticalPath();
-	t = clock() - t;
-
-	std::cout << "CudaVersion2" << std::endl;
-	std::cout << "pathLength: " << path->pathLength << std::endl;
-	std::cout << "Calculated in: " << t << "[ms]" << std::endl;
-	std::cout << "Kerneles calculated in: " << cuda->getMiliseconds() << "[ms]\n" << std::endl;
-
-	delete cuda;
-	delete path;
-}
-
-void parallelCUDA3(std::string graphFilename, unsigned vertexesNumber) {
-	CudaVersion3* cuda = new CudaVersion3(graphFilename, vertexesNumber);
-
-	if (TEST_MODE) {
-		cuda->printMatrix();
-	}
-
-	if (SAVE_MODE) {
-		cuda->saveMatrix();
-	}
-
-	clock_t t = clock();
-	CudaVersion3::path* path = cuda->getCriticalPath();
-	t = clock() - t;
-
-	std::cout << "CudaVersion3" << std::endl;
-	std::cout << "pathLength: " << path->pathLength << std::endl;
-	std::cout << "Calculated in: " << t << "[ms]" << std::endl;
-	std::cout << "Kerneles calculated in: " << cuda->getMiliseconds() << "[ms]\n" << std::endl;
-
-	delete cuda;
-	delete path;
-}
-
 
 void parallelC11Threads(std::string graphFilename, unsigned vertexesNumber) {
 	C11ThreadsVersion* threadsVersion = new C11ThreadsVersion(graphFilename, vertexesNumber);
