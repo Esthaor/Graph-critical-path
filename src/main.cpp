@@ -217,7 +217,7 @@ void parallelC11Threads(std::string graphFilename, unsigned vertexesNumber) {
 
 	std::cout << "C11Threads" << std::endl;
 	std::cout << "pathLength: " << path->pathLength << std::endl;
-	std::cout << "Calculated in: " << t << "[ms]" << std::endl;
+	std::cout << "Calculated in: " << t << "[ms]\n" << std::endl;
 
 	delete threadsVersion;
 	delete path;
@@ -230,12 +230,13 @@ int main(int argc, char** argv) {
 		incremental(GRAPH_FILE, std::stoul(argv[1])); // default mode
 	}
 	else {
+		std::cout << "VERTEXES: " << VERTEXES << std::endl;
+		incremental(GRAPH_FILE, VERTEXES); // test mode
 		parallelOpenMp(GRAPH_FILE, VERTEXES);
-		int len = incremental(GRAPH_FILE, VERTEXES); // test mode
-		incrementalLinear(GRAPH_FILE, VERTEXES);
 		parallelC11Threads(GRAPH_FILE, VERTEXES); // test mode
-		incrementalAdjacencyTable(GRAPH_FILE, VERTEXES);
 		parallelCUDA(GRAPH_FILE, VERTEXES);
+		//incrementalAdjacencyTable(GRAPH_FILE, VERTEXES);
+		//incrementalLinear(GRAPH_FILE, VERTEXES);
 		//parallelCUDA3(GRAPH_FILE, VERTEXES);
 		//std::cout << "Length: " << len << std::endl;
 	}
