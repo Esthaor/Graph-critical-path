@@ -23,10 +23,6 @@ CUDAVersion::CUDAVersion(std::string graphFilename, unsigned vertexesNumber){
 	fillAdjacencyTable();
 }
 
-/*CUDAVersion::~CUDAVersion() {
-	delete
-}*/
-
 void CUDAVersion::fillAdjacencyTable() {
 
 	for (int i = 0; i < vertexesNumber; i++) {
@@ -36,7 +32,6 @@ void CUDAVersion::fillAdjacencyTable() {
 				stab[i * vertexesNumber + j].first = j;
 				stab[i * vertexesNumber + j].second = matrix[i][j];
 				tab_sizes[i]++;
-				//tab_end[i].push_back(j);
 			}
 		}
 	}
@@ -95,9 +90,6 @@ __global__ void kernelNew_old(unsigned vertexesNumber, int* matrix, int* distanc
 	}
 }
 
-// aktualizacja distance po przejsciu edges
-// wiêcej niz jedna wspolrzedna na kernel
-
 void CUDAVersion::bellmanFord_old(unsigned row, std::pair<std::vector<int>, std::vector<unsigned>>* pair) {
 	int* distance = new int[vertexesNumber];
 	int* cuda_distance;
@@ -116,18 +108,13 @@ void CUDAVersion::bellmanFord_old(unsigned row, std::pair<std::vector<int>, std:
 
 	distance[row] = 0;
 	cudaMemcpy(cuda_distance, distance, sizeof(int) * vertexesNumber, cudaMemcpyHostToDevice);
-	//cudaMemcpy(cuda_distance, distance, sizeof(long) * vertexesNumber, cudaMemcpyHostToDevice);
 	cudaMemcpy(cuda_matrix, linear_matrix, sizeof(int) * vertexesNumber * vertexesNumber, cudaMemcpyHostToDevice);
 
-	//void* args[] = { &vertexesNumber, cuda_matrix, cuda_distance};
-	//cudaLaunchKernel((const void*)&kernel, blocks, threads, args);
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
 
 	cudaEventRecord(start);
-	//kernel<<<blocks, threads>>>(vertexesNumber, cuda_matrix, cuda_distance);
 	kernelNew_old<<<blocks, threads>>>(vertexesNumber, cuda_matrix, cuda_distance);
-	//kernelNew << <1, vertexesNumber>> >(vertexesNumber, cuda_matrix, cuda_distance);
 
 	cudaDeviceSynchronize();
 
@@ -141,14 +128,7 @@ void CUDAVersion::bellmanFord_old(unsigned row, std::pair<std::vector<int>, std:
 	cudaFree(cuda_matrix);
 	cudaFree(cuda_distance);
 
-	//for (int k = 0; k < vertexesNumber; k++)
-	//	std::cout << distance[k] << std::endl;
-
 	pair->first = std::vector<int>(distance, distance + vertexesNumber);
-
-	//for(int w = 0; w < vertexesNumber; w++)
-	//	std::cout << pair->first[w] << std::endl;
-
 	pair->second = predecessor;
 }
 
@@ -158,26 +138,12 @@ __global__ void relax_old(unsigned vertexesNumber, unsigned edgesAmount, int edg
 	int id = blockDim.x * blockIdx.x + threadIdx.x;
 	int sum, weight;
 
-	printf("id = %d, blockIdx = %d, threardIdx = %d\n", id, blockIdx.x, threadIdx.x);
-
 	if (id >= edgesAmount) return;
-	printf("dupa2\n");
-
-
 		weight = cuda_matrix[edgeStart * vertexesNumber + id];
-			printf("dupa3\n");
 		if (weight != 0) {
-			printf("dupa4\n");
-
 			sum = cuda_distance[edgeStart] + weight;
-			printf("dupa5\n");
-
 			if (cuda_distance[id] > weight) {
-				printf("dupa6\n");
-
 				atomicMin(&(cuda_distance[id]), sum);
-				printf("dupa7\n");
-
 			}
 		}
 	
@@ -216,14 +182,12 @@ void CUDAVersion::bf_old(unsigned row, std::pair<std::vector<int>, std::vector<u
 	for (int i = 0; i < vertexesNumber; i++) { // wywolujemy tyle watkow ile mamy par
 
 		edgesAmount = tab_sizes[i];
-		//std::cout << "jebac4: " << edgesAmount << std::endl;
 
 		if (edgesAmount == 0) continue;
 
 		b = (edgesAmount / 24) + 1; // liczba blokow
 		if (b == 1) t = edgesAmount; else t = 24;
 
-		//std::cout << "b: " << b << "t: " << t << std::endl;
 		relax_old <<<b, t>>> (vertexesNumber, edgesAmount, i, cuda_matrix, cuda_distance);
 
 	}
@@ -238,9 +202,6 @@ void CUDAVersion::bf_old(unsigned row, std::pair<std::vector<int>, std::vector<u
 
 	cudaFree(cuda_distance);
 	cudaFree(cuda_matrix);
-
-	//for (int k = 0; k < vertexesNumber; k++)
-	//std::cout << return_distance[k] << std::endl;
 
 	pair->first = std::vector<int>(return_distance, return_distance + vertexesNumber);
 	pair->second = predecessor;
@@ -259,32 +220,18 @@ __global__ void initNodeWeight(unsigned row, unsigned vertexesNumber, int* cuda_
 
 __global__ void relax(unsigned edgesAmount, int edgeStart, std::pair<int, int>*** cuda_adjacency_table, int* cuda_distance) {
 	int id = blockDim.x * blockIdx.x + threadIdx.x;
-	//if (threadIdx.x == 10 && blockIdx.x == 0)
 	printf("id = %d, blockIdx = %d, threardIdx = %d\n", id, blockIdx.x, threadIdx.x);
 
 
 	if (id >= edgesAmount) return;
 
-	//if (threadIdx.x == 10)
-		printf("dupa2\n");
-
 	if (cuda_adjacency_table[edgeStart] == nullptr) return;
-	//if (threadIdx.x == 10)
-		printf("dupa3\n");
 
 	int endVertex = cuda_adjacency_table[edgeStart][id]->first;
-	//if (threadIdx.x == 10)
-		printf("dupa4\n");
 
 	int weight = cuda_adjacency_table[edgeStart][id]->second;
 
-	//if (threadIdx.x == 10)
-		printf("dupa5\n");
-
 	if (cuda_distance[endVertex] > cuda_distance[edgeStart] + weight) {
-		//if (threadIdx.x == 10)
-			printf("dupa6\n");
-
 		atomicMin((cuda_distance + sizeof(int) * endVertex), (cuda_distance[edgeStart] + weight));
 	}
 }
@@ -310,7 +257,6 @@ void CUDAVersion::bf(unsigned row, std::pair<std::vector<int>, std::vector<unsig
 	int* return_distance = new int[vertexesNumber];
 
 	int* cuda_distance;
-	//int* cuda_matrix;
 
 	std::pair<int, int>* cuda_stab;
 	std::vector<unsigned> predecessor;
@@ -320,11 +266,8 @@ void CUDAVersion::bf(unsigned row, std::pair<std::vector<int>, std::vector<unsig
 
 	cudaMalloc(&cuda_stab, sizeof(std::pair<int,int>) * vertexesNumber * vertexesNumber);
 	cudaMalloc(&cuda_distance, sizeof(int) * vertexesNumber);
-	//cudaMalloc(&cuda_matrix, sizeof(int) * vertexesNumber * vertexesNumber);
-
 
 	cudaMemcpy(cuda_stab, stab, sizeof(std::pair<int, int>) * vertexesNumber * vertexesNumber, cudaMemcpyHostToDevice);
-	//cudaMemcpy(cuda_matrix, linear_matrix, sizeof(int) * vertexesNumber * vertexesNumber, cudaMemcpyHostToDevice);
 
 	for (int i = 0; i < vertexesNumber; i++) {
 		distance[i] = INT_MAX;
@@ -332,8 +275,6 @@ void CUDAVersion::bf(unsigned row, std::pair<std::vector<int>, std::vector<unsig
 
 	distance[row] = 0;
 	cudaMemcpy(cuda_distance, distance, sizeof(int) * vertexesNumber, cudaMemcpyHostToDevice);
-
-	//initNodeWeight <<<blocksNumber, threadsNumber>>>(row, vertexesNumber, cuda_distance);
 
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
@@ -344,15 +285,10 @@ void CUDAVersion::bf(unsigned row, std::pair<std::vector<int>, std::vector<unsig
 	for (int i = 0; i < vertexesNumber; i++) { // wywolujemy tyle watkow ile mamy par
 		
 		edgesAmount = tab_sizes[i];
-		//std::cout << "jebac4: " << edgesAmount << std::endl;
 
 		if (edgesAmount == 0) {
 			continue;
 		}
-
-/*		if (edgesAmount != tab_end[i].size()) {
-			std::cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << std::endl;
-		}*/
 		
 		b = (edgesAmount / 24) + 1; // liczba blokow
 		if (b == 1)
@@ -360,11 +296,7 @@ void CUDAVersion::bf(unsigned row, std::pair<std::vector<int>, std::vector<unsig
 		else 
 			t = 24;
 
-		//if( i > 1950)
-		//std::cout << "edgesAmount:\t" << edgesAmount << "\tb:\t" << b << "\tt:\t" << t << std::endl;
 		greg <<<b, t>>> (vertexesNumber, edgesAmount, i, cuda_stab, cuda_distance);
-		//relax_old <<<b, t>>> (vertexesNumber, edgesAmount, i, cuda_matrix, cuda_distance);
-
 	}
 
 	cudaDeviceSynchronize();
@@ -377,15 +309,6 @@ void CUDAVersion::bf(unsigned row, std::pair<std::vector<int>, std::vector<unsig
 
 	cudaFree(cuda_stab);
 	cudaFree(cuda_distance);
-	//cudaFree(cuda_matrix);
-
-	/*int temp = INT_MAX;
-	for (int k = 0; k < vertexesNumber; k++) {
-		if (temp > return_distance[k]) {
-			temp = return_distance[k];
-			std::cout << return_distance[k] << std::endl;
-		}
-	}*/
 
 	pair->first = std::vector<int>(return_distance, return_distance + vertexesNumber);
 	pair->second = predecessor;

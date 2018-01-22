@@ -7,13 +7,12 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 
-#define VERTEXES 15000
+#define VERTEXES 5000
 
 using edges = std::vector<std::pair<int, int>*>;
 
 class CUDAVersion: public AbstractGraph {
 
-	//const int vertexes = 10000;
 	int blocksNumber;
 	int threadsNumber;
 
@@ -21,8 +20,6 @@ class CUDAVersion: public AbstractGraph {
 	std::pair<int, int>*** tab;
 	std::pair<int, int> stab[VERTEXES * VERTEXES];
 	
-	//std::vector<int> tab_end[VERTEXES];
-
 	int* tab_sizes;
 
 	cudaEvent_t start, stop;

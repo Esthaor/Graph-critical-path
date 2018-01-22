@@ -70,32 +70,14 @@ __global__ void initNodeWeight_adj(unsigned row, unsigned vertexesNumber, int* c
 
 __global__ void relax_adj(unsigned vertexesNumber, unsigned edgesAmount, int edgeStart, std::pair<int, int>** cuda_adjacency_table, int* cuda_distance) {
 	int id = blockDim.x * blockIdx.x + threadIdx.x;
-	//if (threadIdx.x == 10 && blockIdx.x == 0)
-	printf("id = %d, blockIdx = %d, threardIdx = %d\n", id, blockIdx.x, threadIdx.x);
-
 
 	if (id >= edgesAmount) return;
 
-	//if (threadIdx.x == 10)
-	printf("dupa2\n");
-
 	if (cuda_adjacency_table[edgeStart] == nullptr) return;
-	//if (threadIdx.x == 10)
-	printf("dupa3\n");
-
 	int endVertex = cuda_adjacency_table[edgeStart][id].first;
-	//if (threadIdx.x == 10)
-	printf("dupa4\n");
-
 	int weight = cuda_adjacency_table[edgeStart][id].second;
 
-	//if (threadIdx.x == 10)
-	printf("dupa5\n");
-
 	if (cuda_distance[endVertex] > cuda_distance[edgeStart] + weight) {
-		//if (threadIdx.x == 10)
-		printf("dupa6\n");
-
 		atomicMin((cuda_distance + sizeof(int) * endVertex), (cuda_distance[edgeStart] + weight));
 	}
 }
@@ -165,16 +147,10 @@ void CudaVersion3::bf(unsigned row, std::pair<std::vector<int>, std::vector<unsi
 	for (int i = 0; i < vertexesNumber; i++) { // wywolujemy tyle watkow ile mamy par
 
 		edgesAmount = tab_sizes[i];
-		//std::cout << "jebac4: " << edgesAmount << std::endl;
 
 		if (edgesAmount == 0) {
 			continue;
 		}
-
-		/*		if (edgesAmount != tab_end[i].size()) {
-		std::cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << std::endl;
-		}*/
-
 		b = (edgesAmount / 24) + 1; // liczba blokow
 		if (b == 1)
 			t = edgesAmount;
@@ -182,10 +158,7 @@ void CudaVersion3::bf(unsigned row, std::pair<std::vector<int>, std::vector<unsi
 			t = 24;
 		std::cout << "bf6" << std::endl;
 
-		//if( i > 1950)
-		//std::cout << "edgesAmount:\t" << edgesAmount << "\tb:\t" << b << "\tt:\t" << t << std::endl;
 		relax_adj << <b, t >> > (vertexesNumber, edgesAmount, i, cuda_adjacency, cuda_distance);
-		//relax_old <<<b, t>>> (vertexesNumber, edgesAmount, i, cuda_matrix, cuda_distance);
 
 	}
 
@@ -202,15 +175,6 @@ void CudaVersion3::bf(unsigned row, std::pair<std::vector<int>, std::vector<unsi
 	}
 	cudaFree(cuda_adjacency);
 	cudaFree(cuda_distance);
-	//cudaFree(cuda_matrix);
-
-	/*int temp = INT_MAX;
-	for (int k = 0; k < vertexesNumber; k++) {
-	if (temp > return_distance[k]) {
-	temp = return_distance[k];
-	std::cout << return_distance[k] << std::endl;
-	}
-	}*/
 
 	pair->first = std::vector<int>(return_distance, return_distance + vertexesNumber);
 	pair->second = predecessor;

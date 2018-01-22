@@ -9,17 +9,13 @@
 #include"../include/CudaVersion3.cuh"
 
 
-#define VERTEXES 15000
+#define VERTEXES 5000
 
 const bool TEST_MODE = false;
 const bool SAVE_MODE = false;
 const std::string GRAPH_FILE = "gen/graph.txt";
 
 void printVector(std::vector<unsigned> v) {
-//	std::ostringstream oss;
-//	std::copy(v.begin(), v.end() - 1, std::ostream_iterator<int>(oss, ","));	// Convert all but the last element to avoid a trailing ","
-//	oss << v.back();	// Now add the last element with no delimiter
-//	std::cout << "Vertexes: " << oss.str() << std::endl;
 	std::cout << "isEmpty: " << v.empty() << std::endl;
 	std::cout << "Vertexes: ";
 	for (auto i = v.begin(); i != v.end(); ++i) std::cout << *i << ' ';
@@ -45,9 +41,6 @@ int incremental(std::string graphFilename, unsigned vertexesNumber) {
 
 	std::cout << "Incremental" << std::endl;
 	std::cout << "pathLength: " << path->pathLength << std::endl;
-
-	//printVector(path->vertexes);
-
 	std::cout << "Calculated in: " << t << "[ms]\n" << std::endl;
 
 	delete incremental;
@@ -231,14 +224,10 @@ int main(int argc, char** argv) {
 	}
 	else {
 		std::cout << "VERTEXES: " << VERTEXES << std::endl;
-		incremental(GRAPH_FILE, VERTEXES); // test mode
+		incremental(GRAPH_FILE, VERTEXES); 
 		parallelOpenMp(GRAPH_FILE, VERTEXES);
-		parallelC11Threads(GRAPH_FILE, VERTEXES); // test mode
+		parallelC11Threads(GRAPH_FILE, VERTEXES); 
 		parallelCUDA(GRAPH_FILE, VERTEXES);
-		//incrementalAdjacencyTable(GRAPH_FILE, VERTEXES);
-		//incrementalLinear(GRAPH_FILE, VERTEXES);
-		//parallelCUDA3(GRAPH_FILE, VERTEXES);
-		//std::cout << "Length: " << len << std::endl;
 	}
 	std::cin.get();
 
