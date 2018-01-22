@@ -17,7 +17,7 @@ void CudaVersion2::countEdges() {
 	int i, j, size;
 	for (int i = 0; i < vertexesNumber; i++) {
 		for (int j = i; j < vertexesNumber; j++) {
-			if (linear_matrix[i * vertexesNumber + j] != 0) {
+			if (linear_matrix[i * vertexesNumber + j] <= 0) {
 				tab_sizes[i]++;
 			}
 		}
@@ -45,25 +45,15 @@ AbstractGraph::path * CudaVersion2::getCriticalPath() {
 
 __global__ void relax(unsigned vertexesNumber, unsigned edgesAmount, int edgeStart, int* cuda_matrix, int* cuda_distance) {
 	int id = blockDim.x * blockIdx.x + threadIdx.x;
-	int weight;
-
-	//printf("id = %d, blockIdx = %d, threardIdx = %d\n", id, blockIdx.x, threadIdx.x);
 
 	if (id >= edgesAmount) return;
-	//printf("dupa2\n");
 
+	int weight = cuda_matrix[edgeStart * vertexesNumber + id];
 
-	weight = cuda_matrix[edgeStart * vertexesNumber + id];
-	//printf("dupa3\n");
-	if (weight != 0) {
-		//printf("dupa4\n");
+	if (weight >= 0) {
 
 		if (cuda_distance[id] > cuda_distance[edgeStart] + weight) {
-			//printf("dupa6\n");
-
 			atomicMin(&(cuda_distance[id]), (cuda_distance[edgeStart] + weight));
-			//printf("dupa7\n");
-
 		}
 	}
 
@@ -125,8 +115,8 @@ void CudaVersion2::bf(unsigned row, std::pair<std::vector<int>, std::vector<unsi
 	cudaFree(cuda_distance);
 	cudaFree(cuda_matrix);
 
-	for (int k = 0; k < vertexesNumber; k++)
-		std::cout << return_distance[k] << std::endl;
+	//for (int k = 0; k < vertexesNumber; k++)
+		//std::cout << return_distance[k] << std::endl;
 
 	pair->first = std::vector<int>(return_distance, return_distance + vertexesNumber);
 	pair->second = predecessor;

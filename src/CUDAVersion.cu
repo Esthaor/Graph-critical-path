@@ -40,38 +40,6 @@ void CUDAVersion::fillAdjacencyTable() {
 			}
 		}
 	}
-	 /*
-	int i, j, size;
-	adjacency_table = new edges[vertexesNumber];
-	for (i = 0; i < vertexesNumber; i++) {
-		for (j = i; j < vertexesNumber; j++) {
-			if (matrix[i][j] != 0) {
-				adjacency_table[i].push_back(new std::pair<int, int>(j, matrix[i][j]));
-			}
-		}
-	}
-
-	//std::pair<int, int> tablica[vertexes][vertexes]
-
-	tab = new std::pair<int, int>**[vertexesNumber];
-	for (i = 0; i < vertexesNumber; i++) {
-		tab_sizes[i] = adjacency_table[i].size();
-		//std::cout << "size: " << tab_sizes[i] << std::endl;
-
-		if (size == 0) {
-			tab[i] = nullptr;// new std::pair<int, int>*[1];
-							 //tab[i][0] = new std::pair<int, int>(i, 0);
-			continue;
-		}
-		else {
-			tab[i] = new std::pair<int, int>*[tab_sizes[i]];
-		}
-
-		for (j = 0; j < tab_sizes[i]; j++) {
-			tab[i][j] = new std::pair<int, int>(adjacency_table[i][j]->first, adjacency_table[i][j]->second);
-		}
-	}
-	*/
 }
 
 AbstractGraph::path* CUDAVersion::getCriticalPath(unsigned vertexStart) {
@@ -323,32 +291,16 @@ __global__ void relax(unsigned edgesAmount, int edgeStart, std::pair<int, int>**
 
 __global__ void greg(unsigned vertexesNumber, unsigned edgesAmount, int edgeStart, std::pair<int, int>* cuda_stab, int* cuda_distance) {
 	int id = blockDim.x * blockIdx.x + threadIdx.x;
-	//if (threadIdx.x == 10 && blockIdx.x == 0)
-	//printf("id = %d, blockIdx = %d, threardIdx = %d\n", id, blockIdx.x, threadIdx.x);
 
 	if (id >= edgesAmount) return;
 
-	//if (threadIdx.x == 10)
-	//printf("dupa2\n");
-
-	int endVertex = cuda_stab[edgeStart * vertexesNumber + id].first;
-	//if (threadIdx.x == 10)
-	//printf("dupa4\n");
-
 	int weight = cuda_stab[edgeStart * vertexesNumber + id].second;
-
 	if (weight >= 0) return;
 
-	//if (threadIdx.x == 10)
-	//printf("dupa5\n");
+	int endVertex = cuda_stab[edgeStart * vertexesNumber + id].first;
 
 	if (cuda_distance[endVertex] > cuda_distance[edgeStart] + weight) {
-		//if (threadIdx.x == 10)
-		//printf("dupa6\n");
-		//cuda_distance[endVertex] = cuda_distance[edgeStart] + weight;
-		//atomicMin((cuda_distance + sizeof(int) * endVertex), (cuda_distance[edgeStart] + weight));
 		atomicMin(&(cuda_distance[endVertex]), (cuda_distance[edgeStart] + weight));
-
 	}
 }
 

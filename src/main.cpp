@@ -6,8 +6,10 @@
 #include"../include/OpenMPVersion.h"
 #include"../include/CUDAVersion.cuh"
 #include"../include/CudaVersion2.cuh"
+#include"../include/CudaVersion3.cuh"
 
-#define VERTEXES 10000
+
+#define VERTEXES 15000
 
 const bool TEST_MODE = false;
 const bool SAVE_MODE = false;
@@ -173,6 +175,31 @@ void parallelCUDA2(std::string graphFilename, unsigned vertexesNumber) {
 	delete path;
 }
 
+void parallelCUDA3(std::string graphFilename, unsigned vertexesNumber) {
+	CudaVersion3* cuda = new CudaVersion3(graphFilename, vertexesNumber);
+
+	if (TEST_MODE) {
+		cuda->printMatrix();
+	}
+
+	if (SAVE_MODE) {
+		cuda->saveMatrix();
+	}
+
+	clock_t t = clock();
+	CudaVersion3::path* path = cuda->getCriticalPath();
+	t = clock() - t;
+
+	std::cout << "CudaVersion3" << std::endl;
+	std::cout << "pathLength: " << path->pathLength << std::endl;
+	std::cout << "Calculated in: " << t << "[ms]" << std::endl;
+	std::cout << "Kerneles calculated in: " << cuda->getMiliseconds() << "[ms]\n" << std::endl;
+
+	delete cuda;
+	delete path;
+}
+
+
 void parallelC11Threads(std::string graphFilename, unsigned vertexesNumber) {
 	C11ThreadsVersion* threadsVersion = new C11ThreadsVersion(graphFilename, vertexesNumber);
 
@@ -203,13 +230,13 @@ int main(int argc, char** argv) {
 		incremental(GRAPH_FILE, std::stoul(argv[1])); // default mode
 	}
 	else {
-		//parallelOpenMp(GRAPH_FILE, VERTEXES);
-		//int len = incremental(GRAPH_FILE, VERTEXES); // test mode
-		//incrementalLinear(GRAPH_FILE, VERTEXES);
-		//parallelC11Threads(GRAPH_FILE, VERTEXES); // test mode
-		//incrementalAdjacencyTable(GRAPH_FILE, VERTEXES);
+		parallelOpenMp(GRAPH_FILE, VERTEXES);
+		int len = incremental(GRAPH_FILE, VERTEXES); // test mode
+		incrementalLinear(GRAPH_FILE, VERTEXES);
+		parallelC11Threads(GRAPH_FILE, VERTEXES); // test mode
+		incrementalAdjacencyTable(GRAPH_FILE, VERTEXES);
 		parallelCUDA(GRAPH_FILE, VERTEXES);
-		//parallelCUDA2(GRAPH_FILE, VERTEXES);
+		//parallelCUDA3(GRAPH_FILE, VERTEXES);
 		//std::cout << "Length: " << len << std::endl;
 	}
 	std::cin.get();
